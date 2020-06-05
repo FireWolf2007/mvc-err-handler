@@ -18,7 +18,7 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
 	@Override
 	protected ResponseEntity<Object> handleBindException(BindException ex, HttpHeaders headers, HttpStatus status,
 			WebRequest request) {
-		log.error("ERROR catched in handleBindException! {}", request.getDescription(false), ex);
+		log.error("ERROR catched in handleBindException! {}", request.getDescription(false));
 		/**
 		 * See next method - it has java.lang.reflect.Method in exception.
 		 * BindException does not.
@@ -30,8 +30,7 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
-		log.error("ERROR catched in handleMethodArgumentNotValid! {}", ex.getParameter().getMethod().toGenericString(),
-				ex);
+		log.error("ERROR catched in handleMethodArgumentNotValid! {}", ex.getParameter().getMethod().toGenericString());
 		return super.handleMethodArgumentNotValid(ex, headers, status, request);
 	}
 }

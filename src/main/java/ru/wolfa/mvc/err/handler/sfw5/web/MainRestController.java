@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MainRestController {
 
 	@PostMapping("/request-body")
-	public String requestBody(@RequestBody @Valid DataClass data) {
+	public String requestBody(@RequestBody @Valid SimpleDataClass data) {
 		return "value=" + data.getTest().toString();
 	}
 

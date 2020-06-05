@@ -2,11 +2,14 @@ package ru.wolfa.mvc.err.handler.sfw5.web;
 
 import javax.validation.constraints.NotNull;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public class DataClass {
 
 	@NotNull
 	private Long test;
-	private Long field2;
+	@NotNull
+	private MultipartFile file;
 
 	public Long getTest() {
 		return test;
@@ -16,17 +19,17 @@ public class DataClass {
 		this.test = test;
 	}
 
-	public Long getField2() {
-		return field2;
+	public MultipartFile getFile() {
+		return file;
 	}
 
-	public void setField2(Long field2) {
-		this.field2 = field2;
+	public void setFile(MultipartFile file) {
+		this.file = file;
 	}
 
 	@Override
 	public String toString() {
-		return "DataClass [test=" + test + ", field2=" + field2 + "]";
+		return "DataClass [test=" + test + ", file=" + file + "]";
 	}
 
 }
