@@ -9,6 +9,7 @@ import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @ControllerAdvice
@@ -18,11 +19,12 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
 	@Override
 	protected ResponseEntity<Object> handleBindException(BindException ex, HttpHeaders headers, HttpStatus status,
 			WebRequest request) {
-		log.error("ERROR catched in handleBindException! {}", request.getDescription(false));
+		log.error("ERROR catched in handleBindException! {}, {}", request.getDescription(false), ex.getMessage());
 		/**
-		 * See next method - it has java.lang.reflect.Method in exception.
-		 * BindException does not.
-		 * But! ModelAttributeMethodProcessor.resolveArgument has information about Method.
+		 * See next method - it has java.lang.reflect.Method in exception. BindException
+		 * does not.<br/>
+		 * But! ModelAttributeMethodProcessor.resolveArgument has information about
+		 * Method.
 		 */
 		return super.handleBindException(ex, headers, status, request);
 	}
@@ -30,7 +32,15 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
-		log.error("ERROR catched in handleMethodArgumentNotValid! {}", ex.getParameter().getMethod().toGenericString());
+		log.error("ERROR catched in handleMethodArgumentNotValid! {}, {}",
+				ex.getParameter().getMethod().toGenericString(), ex.getMessage());
 		return super.handleMethodArgumentNotValid(ex, headers, status, request);
+	}
+
+	@Override
+	protected ResponseEntity<Object> handleMissingServletRequestPart(MissingServletRequestPartException ex,
+			HttpHeaders headers, HttpStatus status, WebRequest request) {
+		log.error("ERROR catched in handleMissingServletRequestPart! {}, {}", ex.getRequestPartName(), ex.getMessage());
+		return super.handleExceptionInternal(ex, null, headers, status, request);
 	}
 }

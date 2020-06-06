@@ -43,23 +43,21 @@ class MainRestControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
+
 	@BeforeAll
 	public static void init() {
 	}
 
-	//@Test
+	@Test
 	void requestBodyOkTest() throws Exception {
-		this.mockMvc.perform(post("/request-body").contentType(MediaType.APPLICATION_JSON).content("{\"test\":23,\"file\":[0]}"))
+		// file actually does not received
+		this.mockMvc
+				.perform(post("/request-body").contentType(MediaType.APPLICATION_JSON)
+						.content("{\"test\":23,\"file\":[0]}"))
 				.andDo(log()).andExpect(status().isOk()).andExpect(content().string(containsString("value=23")));
 	}
 
 	@Test
-	void requestBodyErrTest() throws Exception {
-		this.mockMvc.perform(post("/request-body").contentType(MediaType.APPLICATION_JSON).content("{}"))
-		.andDo(log()).andExpect(status().isBadRequest());
-	}
-
-	//@Test
 	void noRequestBodyOkTest() throws Exception {
 		// Spring 5.2 - new MockMvcRequestBuilders.multipart
 		// Spring 4.3 - old MockMvcRequestBuilders.fileUpload (deprecated in 5.2)
@@ -68,10 +66,35 @@ class MainRestControllerTest {
 			request.setMethod("POST");
 			return request;
 		});
-		builder.param("test", "23");
+		builder.param("test", "24");
 		builder.file(file);
 		this.mockMvc.perform(builder).andDo(log()).andExpect(status().isOk())
-				.andExpect(content().string(containsString("value=23")));
+				.andExpect(content().string(containsString("value=24")));
+	}
+
+	@Test
+	void noRequestBody2OkTest() throws Exception {
+		// Spring 5.2 - new MockMvcRequestBuilders.multipart
+		// Spring 4.3 - old MockMvcRequestBuilders.fileUpload (deprecated in 5.2)
+		MockMultipartHttpServletRequestBuilder builder = MockMvcRequestBuilders.fileUpload("/no-request-body-2");
+		builder.with(request -> {
+			request.setMethod("POST");
+			return request;
+		});
+		builder.param("test", "25");
+		builder.file(file);
+		this.mockMvc.perform(builder).andDo(log()).andExpect(status().isOk())
+				.andExpect(content().string(containsString("value=25")));
+	}
+
+	// ERRORS / EXCEPTIONS
+
+	@Test
+	void requestBodyErrTest() throws Exception {
+		this.mockMvc.perform(post("/request-body").contentType(MediaType.APPLICATION_JSON).content("{}")).andDo(log())
+				.andExpect(status().isBadRequest());
+		this.mockMvc.perform(post("/request-body").contentType(MediaType.APPLICATION_JSON).content("{\"test1\":23}"))
+				.andDo(log()).andExpect(status().isBadRequest());
 	}
 
 	@Test
@@ -83,8 +106,22 @@ class MainRestControllerTest {
 			request.setMethod("POST");
 			return request;
 		});
-		builder.param("test1", "23");
-		builder.file(file);
+		builder.param("test", "24");
+		// builder.file(file);
+		this.mockMvc.perform(builder).andDo(log()).andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void noRequestBody2ErrTest() throws Exception {
+		// Spring 5.2 - new MockMvcRequestBuilders.multipart
+		// Spring 4.3 - old MockMvcRequestBuilders.fileUpload (deprecated in 5.2)
+		MockMultipartHttpServletRequestBuilder builder = MockMvcRequestBuilders.fileUpload("/no-request-body-2");
+		builder.with(request -> {
+			request.setMethod("POST");
+			return request;
+		});
+		builder.param("test", "25");
+		// builder.file(file);
 		this.mockMvc.perform(builder).andDo(log()).andExpect(status().isBadRequest());
 	}
 
